@@ -1,15 +1,42 @@
 "use client";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function InventoryList({ data }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (data) {
+      setLoading(false);
+    } else {
+      setError("Failed to load data");
+    }
+  }, [data]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-10">
+        <div className="w-16 h-16 border-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500 p-10">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   if (!data || data.length === 0) {
-    return <p className="text-center text-gray-500">No data available</p>;
+    return <p className="text-center text-gray-500 p-10">No data available</p>;
   }
 
   return (
     <>
       {data.map((item, index) => {
-        // Convert MSRP and Price to integers
         const parsePrice = (price) => {
           if (!price) return null;
           return parseInt(
@@ -21,7 +48,6 @@ export default function InventoryList({ data }) {
         const msrpValue = parsePrice(item?.Msrp);
         const priceValue = parsePrice(item?.Price);
 
-        // Calculate savings
         const savings =
           msrpValue && priceValue && msrpValue > priceValue
             ? msrpValue - priceValue
@@ -30,7 +56,7 @@ export default function InventoryList({ data }) {
         return (
           <div
             key={index}
-            className="border border-gray-300 p-4 flex flex-col gap-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="border border-gray-300 p-4 flex flex-col gap-4 rounded-lg shadow-md hover:shadow-lg transition-shadow hover:bg-gray-100 cursor-pointer"
           >
             <div className="flex justify-between w-full text-left">
               <strong className="text-lg font-semibold text-gray-800">
@@ -38,16 +64,16 @@ export default function InventoryList({ data }) {
               </strong>
             </div>
 
-            <div className="mt-4">
+            <div className="">
               <div className="flex gap-4">
                 <div>
                   <img
-                    src={item?.Photo1 || "/placeholder.jpg"} // Fallback for missing image
+                    src={item?.Photo1 || "/placeholder.jpg"}
                     alt={`${item.Make || "Vehicle"} ${item.Model || ""}`}
                     className="min-w-48 w-48 aspect-square rounded-xl object-cover"
                   />
                 </div>
-                <div className="flex flex-col justify-between w-full">
+                <div className="flex flex-col w-full">
                   <div className="grid grid-cols-1 gap-2">
                     {msrpValue && (
                       <div className="flex justify-between">
@@ -106,14 +132,28 @@ export default function InventoryList({ data }) {
                       </div>
                     )}
                   </div>
-                  <Link
-                    href={`#`}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    View Details
-                  </Link>
                 </div>
               </div>
+            </div>
+            <div className="grid grid-cols-3 space-x-2">
+              <Link
+                href={`#`}
+                className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-gray-800 text-center"
+              >
+                Get E-Price
+              </Link>
+              <Link
+                href={`#`}
+                className="px-4 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 text-center"
+              >
+                Get Pre-Approved
+              </Link>
+              <Link
+                href={`#`}
+                className="px-4 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 text-center"
+              >
+                View Details
+              </Link>
             </div>
           </div>
         );
