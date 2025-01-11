@@ -1,9 +1,10 @@
-import InventoryPage from "./components/inventory/InventoryPage";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="">
-      <InventoryPage />
+      <Link href={"/inventory"}>Go to InventoryPage</Link>
+      {/* <InventoryPage /> */}
     </div>
   );
 }
